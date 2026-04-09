@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+    <title>MetraSync Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>MetraSync</h2>
+            </div>
+            <ul class="nav-links">
+                <li><button class="nav-btn active" data-target="home.html">Dashboard Home</button></li>
+                <li><button class="nav-btn" data-target="notevault.html">Note Vault</button></li>
+                <li><button class="nav-btn" data-target="revauditor.html">Revision Auditor</button></li>
+                <li><button class="nav-btn" data-target="sra.html">Surface Roughness</button></li>
+                <li><button class="nav-btn" data-target="vbarepo.html">VBA Repository</button></li>
+            </ul>
+        </nav>
+
+        <main class="content-area">
+            <div id="app-view">
+                </div>
+        </main>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

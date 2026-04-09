@@ -1,0 +1,15 @@
+{
+  "name": "metrasync",
+  "version": "1.0.0",
+  "description": "Centralized dashboard for lab applications",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^29.0.0"
+  }
+}
