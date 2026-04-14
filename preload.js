@@ -1,7 +1,22 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// We use the contextBridge to expose specific, safe APIs to the frontend
 contextBridge.exposeInMainWorld('api', {
-    // We will add functions here later, like:
-    // runPythonScript: (scriptName) => ipcRenderer.invoke('run-python', scriptName)
+    // Outbound calls
+    printToPdf: (partId) => ipcRenderer.send('print-to-pdf', partId),
+    exportData: (data, filename) => ipcRenderer.send('export-data', data, filename),
+    importData: () => ipcRenderer.send('import-data'),
+    
+    // Inbound listeners (Cleans up old listeners automatically on page reload)
+    onPdfExportStarted: (callback) => {
+        ipcRenderer.removeAllListeners('pdf-export-started');
+        ipcRenderer.on('pdf-export-started', () => callback());
+    },
+    onPdfExportComplete: (callback) => {
+        ipcRenderer.removeAllListeners('pdf-export-complete');
+        ipcRenderer.on('pdf-export-complete', () => callback());
+    },
+    onDataLoaded: (callback) => {
+        ipcRenderer.removeAllListeners('data-loaded');
+        ipcRenderer.on('data-loaded', (event, data) => callback(data));
+    }
 });

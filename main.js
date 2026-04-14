@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
-// Keep a global reference of the window object to prevent garbage collection
 let mainWindow;
 
 function createWindow() {
@@ -11,17 +11,12 @@ function createWindow() {
         title: "MetraSync Dashboard",
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            // Security best practices
             nodeIntegration: false,
             contextIsolation: true
         }
     });
 
-    // Load the main SPA shell
     mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
-
-    // Open DevTools for debugging (we can remove this later)
-    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         mainWindow = null;
@@ -30,7 +25,6 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
-
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
@@ -40,4 +34,62 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// IPC Listeners will go here later (e.g., listening for Python execution requests)
+// --- NOTE VAULT IPC HANDLERS ---
+ipcMain.on('print-to-pdf', async (event, partId) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    event.sender.send('pdf-export-started');
+    
+    try {
+        const safeName = partId.replace(/[^a-z0-9]/gi, '_');
+        const pdfPath = await dialog.showSaveDialog(win, {
+            title: 'Save Note as PDF',
+            defaultPath: `${safeName}.pdf`,
+            filters: [{ name: 'PDF', extensions: ['pdf'] }]
+        });
+
+        if (pdfPath.filePath) {
+            const pdfData = await win.webContents.printToPDF({
+                printBackground: true,
+                pageSize: 'Letter'
+            });
+            fs.writeFileSync(pdfPath.filePath, pdfData);
+        }
+    } catch (error) {
+        console.error('Failed to save PDF:', error);
+    } finally {
+        event.sender.send('pdf-export-complete');
+    }
+});
+
+ipcMain.on('export-data', async (event, data, filename) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    try {
+        const savePath = await dialog.showSaveDialog(win, {
+            title: 'Export Profile',
+            defaultPath: filename,
+            filters: [{ name: 'JSON', extensions: ['json'] }]
+        });
+        if (savePath.filePath) {
+            fs.writeFileSync(savePath.filePath, JSON.stringify(data, null, 2));
+        }
+    } catch (err) { 
+        console.error('Export failed:', err); 
+    }
+});
+
+ipcMain.on('import-data', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    try {
+        const openPath = await dialog.showOpenDialog(win, {
+            title: 'Import Profile',
+            filters: [{ name: 'JSON', extensions: ['json'] }],
+            properties: ['openFile']
+        });
+        if (!openPath.canceled && openPath.filePaths.length > 0) {
+            const fileContent = fs.readFileSync(openPath.filePaths[0], 'utf-8');
+            event.sender.send('data-loaded', fileContent);
+        }
+    } catch (err) { 
+        console.error('Import failed:', err); 
+    }
+});
