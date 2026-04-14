@@ -1,37 +1,5 @@
-:root {
-  --bg: #0f1115;
-  --panel: #171a21;
-  --panel-2: #1e2230;
-  --text: #e6eaf2;
-  --muted: #a6afc3;
-  --accent: #5bbcff;
-  --danger: #ff6b6b; 
-  --primary: #66d18f;
-  --btn-text: #ffffff; 
-  --border: #2a3042;
-  --shadow: 0 10px 30px rgba(0,0,0,0.35);
-  --overlay-bg: rgba(23, 26, 33, 0.85);
-  --overlay-text: #e6eaf2;
-}
-
-[data-theme="light"] {
-  --bg: #f0f2f5;
-  --panel: #ffffff;
-  --panel-2: #f7f9fc;
-  --text: #1a202c;
-  --muted: #718096;
-  --accent: #3182ce;
-  --danger: #e53e3e;  
-  --primary: #2f855a; 
-  --btn-text: #ffffff; 
-  --border: #cbd5e0;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --overlay-bg: rgba(255, 255, 255, 0.95);
-  --overlay-text: #1a202c;
-}
-
 .notevault-wrapper {
-  height: calc(100vh - 200px);
+  height: 100%;
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
@@ -74,37 +42,6 @@
 }
 .header-right { justify-content: flex-end; }
 
-.theme-toggle-wrapper {
-  display: flex;
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  border-radius: 20px; 
-  padding: 2px;
-  gap: 2px;
-}
-
-.theme-btn {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 4px 10px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-btn:hover { color: var(--text); }
-.theme-btn.active {
-  background: var(--bg); 
-  color: var(--accent);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-  font-weight: bold;
-}
-
 .notevault-wrapper button {
   appearance: none;
   border: 1px solid var(--border);
@@ -129,7 +66,7 @@
 .profile-btn { padding: 6px 10px; }
 #currentProfileBtn {
   background: transparent;
-  border-color: var(--accent);
+  border: 2px solid var(--accent);
   color: var(--accent);
   font-weight: bold;
   max-width: 200px;
@@ -141,7 +78,7 @@
 
 .app-main {
   display: grid;
-  grid-template-columns: 140px 1fr 420px;
+  grid-template-columns: 200px 1fr 420px;
   gap: 12px;
   padding: 12px; 
   flex: 1; 
@@ -187,7 +124,7 @@
 .thumb-scale-wrap .caption:empty { display: none; }
 
 .thumb-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; }
-.thumb-overlay .title { font-size: 14px; font-weight: 700; color: var(--overlay-text); background: var(--overlay-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); max-width: 100%; white-space: nowrap; overflow: hidden; }
+.thumb-overlay .title { font-size: 14px; font-weight: 700; color: var(--overlay-text); background: var(--overlay-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .viewer { padding: 12px; overflow: auto; display: flex; flex-direction: column; gap: 15px; }
 .viewer .note-body { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; white-space: pre-wrap; line-height: 1.4; font-size: 20px; }
@@ -206,12 +143,15 @@
 .viewer-header.printing #expandBtn, .viewer-header.printing #printBtn { display: none; }
 .viewer-header.printing #pdfLoader { display: flex; }
 
-.editor { padding: 12px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.editor { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; flex: 1; }
 .field { display: grid; gap: 6px; }
 .field span { color: var(--muted); font-size: 12px; }
 .notevault-wrapper input[type="text"] { width: 100%; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
-#notesField { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-#notesInput { width: 100%; height: 100%; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: none; font-family: inherit; font-size: 14px; line-height: 1.5; }
+
+/* FIX: Changed to a fixed height of 300px (down from min-height 350px) */
+#notesField { flex: 0 0 300px; display: flex; flex-direction: column; flex-shrink: 0; }
+/* FIX: Removed vertical resize grabber and ensured overflow scrolling */
+#notesInput { width: 100%; height: 100%; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: none; overflow-y: auto; font-family: inherit; font-size: 14px; line-height: 1.5; }
 
 .images-toolbar { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 .muted { color: var(--muted); }
@@ -256,7 +196,7 @@
 .field-row { display: flex; gap: 8px; }
 .field-row input { flex: 1; }
 
-@media (max-width: 1200px) { .app-main { grid-template-columns: 120px 1fr 360px; --thumb-scale-factor: 0.12; } }
+@media (max-width: 1200px) { .app-main { grid-template-columns: 160px 1fr 360px; --thumb-scale-factor: 0.12; } }
 @media (max-width: 980px) { 
   .app-main { grid-template-columns: 1fr; height: auto; --thumb-scale-factor: 1; }
   .panel { min-height: 40vh; }
@@ -272,7 +212,6 @@
    PRINT TO PDF STYLES (CLEAN WHITE EXPORT)
    ========================================== */
 @media print {
-  /* 1. Reset all layout constraints and force white backgrounds */
   html, body, .app-container, .content-area, #app-view, .notevault-wrapper, .app-main, .panel, .panel-center, .viewer {
     background: #ffffff !important;
     color: #000000 !important;
@@ -287,12 +226,10 @@
     box-shadow: none !important;
   }
 
-  /* 2. Hide ALL dashboard UI, menus, and buttons */
   .top-header, .top-nav, .app-header, .panel-left, .panel-right, .viewer-header, .viewer-toolbar, .modal {
     display: none !important;
   }
 
-  /* 3. Format the actual note content for 8.5x11 paper */
   .viewer {
     padding: 0.5in !important;
     font-size: 12pt !important;
@@ -316,7 +253,6 @@
     padding: 0 !important;
   }
 
-  /* 4. Format the Image Grid for print (4 per row) */
   .viewer .images {
     display: flex !important;
     flex-wrap: wrap !important;

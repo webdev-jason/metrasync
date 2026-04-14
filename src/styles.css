@@ -58,6 +58,7 @@ body {
     list-style: none;
     display: flex;
     justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Vertically aligns everything on the same baseline */
     gap: 10px; /* Adds a little space between buttons */
     padding: 0;
 }
@@ -86,7 +87,7 @@ body {
 /* Main Content Styling */
 .content-area {
     flex: 1;
-    padding: 40px;
+    padding: 20px; /* Reduced from 40px to maximize space */
     overflow-y: auto; 
     display: flex;
     justify-content: center; /* Centers the loaded tools */
@@ -94,7 +95,8 @@ body {
 
 #app-view {
     width: 100%;
-    max-width: 1200px; /* Prevents the inner tools from stretching too wide on large monitors */
+    max-width: 100%; /* Removed 1200px cap so tools fill the width */
+    height: 100%; /* FIX: Added height 100% to pass the boundary down to the child tools */
 }
 
 /* Base styles for loaded pages */
@@ -105,4 +107,97 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   GLOBAL APP THEME VARIABLES (From Note Vault)
+   ========================================== */
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e2230;
+  --text: #e6eaf2;
+  --muted: #a6afc3;
+  --accent: #5bbcff;
+  --danger: #ff6b6b; 
+  --primary: #66d18f;
+  --btn-text: #ffffff; 
+  --border: #2a3042;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --overlay-bg: rgba(23, 26, 33, 0.85);
+  --overlay-text: #e6eaf2;
+}
+
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --panel: #ffffff;
+  --panel-2: #f7f9fc;
+  --text: #1a202c;
+  --muted: #718096;
+  --accent: #3182ce;
+  --danger: #e53e3e;  
+  --primary: #2f855a; 
+  --btn-text: #ffffff; 
+  --border: #cbd5e0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --overlay-bg: rgba(255, 255, 255, 0.95);
+  --overlay-text: #1a202c;
+}
+
+/* Override the dashboard body colors with the Note Vault theme variables */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Overriding specific dashboard elements to match the new global theme */
+.top-header { background-color: var(--bg); }
+.top-header h1 { color: var(--text); }
+.top-header p { color: var(--muted); }
+.top-nav { background-color: var(--panel); border-color: var(--border); }
+.nav-btn { color: var(--muted); }
+.nav-btn:hover { background-color: var(--panel-2); color: var(--text); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ==========================================
+   GLOBAL THEME TOGGLE UI
+   ========================================== */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 15px;
+  padding-right: 20px;
+  border-right: 1px solid var(--border); /* Adds a nice vertical separator line */
+}
+
+.theme-toggle-wrapper {
+  display: flex;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 20px; 
+  padding: 3px;
+  gap: 2px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 4px 10px; /* Restored original pill padding for icons only */
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover { color: var(--text); }
+.theme-btn.active {
+  background: var(--bg); 
+  color: var(--accent);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  font-weight: bold;
 }

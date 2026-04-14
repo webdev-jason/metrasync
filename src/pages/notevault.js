@@ -97,8 +97,6 @@ const els = {
   exportDataBtn: document.getElementById("exportDataBtn"),
   importDataBtn: document.getElementById("importDataBtn"),
   currentProfileBtn: document.getElementById("currentProfileBtn"),
-  themeLightBtn: document.getElementById("themeLightBtn"),
-  themeDarkBtn: document.getElementById("themeDarkBtn"),
   profileModal: document.getElementById("profileModal"),
   profileCloseBtn: document.getElementById("profileCloseBtn"),
   profileList: document.getElementById("profileList"),
@@ -136,29 +134,6 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
-}
-
-function setTheme(theme) {
-  if (theme === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-    els.themeLightBtn.classList.add('active');
-    els.themeDarkBtn.classList.remove('active');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    els.themeDarkBtn.classList.add('active');
-    els.themeLightBtn.classList.remove('active');
-  }
-  localStorage.setItem('app_theme', theme);
-}
-
-els.themeLightBtn.addEventListener("click", () => setTheme('light'));
-els.themeDarkBtn.addEventListener("click", () => setTheme('dark'));
-
-const savedTheme = localStorage.getItem('app_theme');
-if (savedTheme) {
-  setTheme(savedTheme);
-} else {
-  setTheme('dark'); 
 }
 
 let confirmCallback = null;
@@ -538,7 +513,6 @@ window.api.onPdfExportComplete(() => {
   if (header) header.classList.remove('printing');
 });
 
-// UPDATED LOGIC: Will now automatically create a new profile named after the file
 window.api.onDataLoaded(async (jsonContent, filename) => {
   try {
     const loadedData = JSON.parse(jsonContent);
@@ -694,14 +668,26 @@ function generateId(prefix) {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}_${Date.now().toString(36)}`;
 }
 
+// FIX: ensureSelection now sorts the array alphabetically before selecting the first note
 function ensureSelection() {
   const note = notes.find((n) => n.id === selectedNoteId);
   if (!note) {
     const filterText = els.searchInput.value.toLowerCase().trim();
-    const filteredNotes = notes.filter(n => {
+    
+    // Get all notes matching the filter
+    let filteredNotes = notes.filter(n => {
       if (filterText === "") return true;
       return n.partId.toLowerCase().startsWith(filterText); 
     });
+
+    // Apply the exact same alphabetical sorting used in the UI list
+    filteredNotes.sort((a, b) => {
+      const idA = (a.partId || "").toLowerCase();
+      const idB = (b.partId || "").toLowerCase();
+      return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    // Select the first note from the SORTED list
     selectedNoteId = (filteredNotes.length > 0) ? filteredNotes[0].id : null;
   }
 }

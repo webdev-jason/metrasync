@@ -8,6 +8,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        show: false, // Prevents the window from flashing at a smaller size
         title: "MetraSync Dashboard",
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -15,6 +16,10 @@ function createWindow() {
             contextIsolation: true
         }
     });
+
+    // Maximize the window first, then show it to the user smoothly
+    mainWindow.maximize();
+    mainWindow.show();
 
     mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
 
