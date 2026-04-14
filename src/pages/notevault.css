@@ -1,0 +1,348 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e2230;
+  --text: #e6eaf2;
+  --muted: #a6afc3;
+  --accent: #5bbcff;
+  --danger: #ff6b6b; 
+  --primary: #66d18f;
+  --btn-text: #ffffff; 
+  --border: #2a3042;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --overlay-bg: rgba(23, 26, 33, 0.85);
+  --overlay-text: #e6eaf2;
+}
+
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --panel: #ffffff;
+  --panel-2: #f7f9fc;
+  --text: #1a202c;
+  --muted: #718096;
+  --accent: #3182ce;
+  --danger: #e53e3e;  
+  --primary: #2f855a; 
+  --btn-text: #ffffff; 
+  --border: #cbd5e0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --overlay-bg: rgba(255, 255, 255, 0.95);
+  --overlay-text: #1a202c;
+}
+
+.notevault-wrapper {
+  height: calc(100vh - 200px);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.notevault-wrapper * { box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--muted); opacity: 0.5; border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  padding: 12px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border); 
+  flex-shrink: 0;
+}
+
+.app-header h1 { 
+  margin: 0; 
+  font-size: 34px; 
+  letter-spacing: 0.5px;
+  text-align: center;
+  flex: 1 1 auto; 
+}
+.header-left, .header-right {
+  flex: 1 1 0; 
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.header-right { justify-content: flex-end; }
+
+.theme-toggle-wrapper {
+  display: flex;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 20px; 
+  padding: 2px;
+  gap: 2px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover { color: var(--text); }
+.theme-btn.active {
+  background: var(--bg); 
+  color: var(--accent);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  font-weight: bold;
+}
+
+.notevault-wrapper button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; 
+}
+
+.notevault-wrapper button.primary { background: var(--primary); border-color: transparent; color: var(--btn-text); font-weight: 600; }
+.notevault-wrapper button.primary:hover { opacity: 0.9; }
+.notevault-wrapper button.danger { background: var(--danger); border-color: transparent; color: var(--btn-text); font-weight: 600; }
+.notevault-wrapper button.danger:hover { opacity: 0.9; }
+.notevault-wrapper button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.profile-btn { padding: 6px 10px; }
+#currentProfileBtn {
+  background: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#currentProfileBtn:hover { background: rgba(91, 188, 255, 0.1); }
+
+.app-main {
+  display: grid;
+  grid-template-columns: 140px 1fr 420px;
+  gap: 12px;
+  padding: 12px; 
+  flex: 1; 
+  height: auto; 
+  min-height: 0; 
+  --thumb-content-width: 800px;
+  --thumb-scale-factor: 0.145;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-header, .viewer-header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.editor-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.editor-header button { flex: 1; white-space: nowrap; padding-left: 4px; padding-right: 4px; }
+.panel-title { flex: 1; text-align: center; color: var(--muted); font-weight: 600; }
+
+.search-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+#searchInput { width: 100%; padding: 6px 26px 6px 8px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 11px; font-weight: 500; }
+#searchInput::placeholder { color: var(--muted); opacity: 0.8; }
+.search-icon { position: absolute; right: 8px; color: var(--muted); pointer-events: none; font-size: 12px; }
+
+.notes-list { padding: 8px; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+.note-item { position: relative; display: block; background: var(--panel-2); border: 1px solid var(--border); padding: 4px; border-radius: 10px; text-align: left; }
+.note-item.active { outline: 2px solid var(--accent); }
+.note-item .thumb { width: 100%; height: auto; aspect-ratio: 8.5 / 11; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; padding: 0; }
+
+.thumb-scale-wrap { width: var(--thumb-content-width); height: calc(var(--thumb-content-width) * 11 / 8.5); transform-origin: top left; transform: scale(var(--thumb-scale-factor)); padding: 12px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; background: var(--panel-2); }
+.thumb-scale-wrap .print-part-id, .viewer .print-part-id { display: none; }
+.thumb-scale-wrap .note-body { background: var(--bg); font-size: 16px; line-height: 1.4; white-space: pre-wrap; border-radius: 10px; padding: 12px; border: 1px solid var(--border); }
+.thumb-scale-wrap .images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.thumb-scale-wrap .image-card { display: flex; flex-direction: column; margin: 0; background: transparent; border: none; }
+.thumb-scale-wrap .image-card .image-frame { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.thumb-scale-wrap .image-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+.thumb-scale-wrap .caption { margin-top: 6px; padding: 6px 8px; color: var(--muted); font-size: 12px; line-height: 1.2; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); }
+.thumb-scale-wrap .caption:empty { display: none; }
+
+.thumb-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; }
+.thumb-overlay .title { font-size: 14px; font-weight: 700; color: var(--overlay-text); background: var(--overlay-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); max-width: 100%; white-space: nowrap; overflow: hidden; }
+
+.viewer { padding: 12px; overflow: auto; display: flex; flex-direction: column; gap: 15px; }
+.viewer .note-body { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; white-space: pre-wrap; line-height: 1.4; font-size: 20px; }
+.viewer .images { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 16px; }
+.viewer .image-card { display: flex; flex-direction: column; margin: 0; background: transparent; border: none; }
+.viewer .image-card .image-frame { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; }
+.viewer .image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.viewer .image-card .caption { margin-top: 6px; padding: 6px 8px; color: var(--muted); font-size: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); }
+.viewer .image-card .caption:empty { display: none; }
+
+.viewer-header { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 12px 10px; border-bottom: 1px solid var(--border); }
+.viewer-toolbar { display: flex; justify-content: center; align-items: center; gap: 10px; }
+.viewer-title { text-align: center; font-weight: 700; color: var(--text); font-size: 24px; margin: 0; padding: 0; }
+
+#pdfLoader { display: none; align-items: center; gap: 10px; color: var(--text); font-weight: 600; background: var(--panel-2); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 100; margin: 0; }
+.viewer-header.printing #expandBtn, .viewer-header.printing #printBtn { display: none; }
+.viewer-header.printing #pdfLoader { display: flex; }
+
+.editor { padding: 12px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.field { display: grid; gap: 6px; }
+.field span { color: var(--muted); font-size: 12px; }
+.notevault-wrapper input[type="text"] { width: 100%; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
+#notesField { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+#notesInput { width: 100%; height: 100%; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: none; font-family: inherit; font-size: 14px; line-height: 1.5; }
+
+.images-toolbar { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.muted { color: var(--muted); }
+.images-container { display: flex; overflow-x: auto; overflow-y: hidden; gap: 10px; padding-bottom: 8px; max-height: 140px; padding: 4px; flex-shrink: 0; }
+.img-card { position: relative; border: 1px solid var(--border); background: var(--panel-2); border-radius: 10px; overflow: hidden; width: 120px; flex-shrink: 0; }
+.img-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+.img-card .img-actions { position: absolute; inset: 6px 6px auto auto; display: flex; gap: 6px; }
+.img-card .img-actions button { padding: 4px 6px; font-size: 12px; }
+.img-card .caption { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; padding: 4px 6px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.img-card .caption:empty { display: none; }
+.img-card.active { border: 2px solid var(--accent); outline: none; }
+
+.modal { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal[aria-hidden="false"] { display: flex; }
+.modal-dialog { width: min(96vw, 1100px); background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+.modal-header, .modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px; border-bottom: 1px solid var(--border); }
+.modal-footer { border-bottom: none; border-top: 1px solid var(--border); }
+.modal-body { padding: 10px; display: flex; flex-direction: column; gap: 16px; }
+
+.cropper-stage { position: relative; background: #0b0d12; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; height: 80vh; display: grid; place-items: center; }
+#cropperImage { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; transform: translate(-50%, -50%) scale(var(--crop-zoom, 1)); transform-origin: center center; }
+.crop-box { position: absolute; border: 2px solid var(--accent); box-shadow: 0 0 0 200vmax rgba(0,0,0,0.5); aspect-ratio: 1 / 1; touch-action: none; }
+.crop-box::after { content: ""; position: absolute; inset: 0; border: 1px dashed rgba(255,255,255,0.35); }
+.crop-box .handle { position: absolute; width: 14px; height: 14px; background: #ffffff; border: 2px solid #0b0d12; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.5); z-index: 10; }
+.crop-box .handle.nw { top: -7px; left: -7px; cursor: nwse-resize; }
+.crop-box .handle.ne { top: -7px; right: -7px; cursor: nesw-resize; }
+.crop-box .handle.sw { bottom: -7px; left: -7px; cursor: nesw-resize; }
+.crop-box .handle.se { bottom: -7px; right: -7px; cursor: nwse-resize; }
+.crop-controls { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+.crop-controls input[type="range"] { width: 200px; display: block; }
+
+#imageViewerModal .modal-body { overflow: hidden; }
+#modalViewerImage { display: block; width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; transform-origin: center center; transition: transform 0.1s ease-out; }
+#imageViewerModal .modal-footer { justify-content: center; }
+#modalViewerCloseBtn { min-width: 120px; }
+
+.profile-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.profile-list-item { display: flex; gap: 8px; }
+.profile-switch-btn { flex-grow: 1; text-align: left; }
+.profile-switch-btn.active { border-color: var(--accent); color: var(--accent); font-weight: bold; }
+.profile-delete-btn { flex-shrink: 0; padding: 6px 12px; }
+.field-row { display: flex; gap: 8px; }
+.field-row input { flex: 1; }
+
+@media (max-width: 1200px) { .app-main { grid-template-columns: 120px 1fr 360px; --thumb-scale-factor: 0.12; } }
+@media (max-width: 980px) { 
+  .app-main { grid-template-columns: 1fr; height: auto; --thumb-scale-factor: 1; }
+  .panel { min-height: 40vh; }
+  .panel-left, .app-main.view-expanded .panel-right { display: none; }
+  .app-main.view-expanded .panel-center { display: flex; }
+}
+.app-main.view-expanded { grid-template-columns: 1fr; }
+.app-main.view-expanded .panel-center { width: 100%; max-width: 1400px; justify-self: center; }
+.app-main.view-expanded .viewer { font-size: 125%; }
+.app-main.view-expanded .panel-left, .app-main.view-expanded .panel-right { display: none; }
+
+/* ==========================================
+   PRINT TO PDF STYLES (CLEAN WHITE EXPORT)
+   ========================================== */
+@media print {
+  /* 1. Reset all layout constraints and force white backgrounds */
+  html, body, .app-container, .content-area, #app-view, .notevault-wrapper, .app-main, .panel, .panel-center, .viewer {
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 2. Hide ALL dashboard UI, menus, and buttons */
+  .top-header, .top-nav, .app-header, .panel-left, .panel-right, .viewer-header, .viewer-toolbar, .modal {
+    display: none !important;
+  }
+
+  /* 3. Format the actual note content for 8.5x11 paper */
+  .viewer {
+    padding: 0.5in !important;
+    font-size: 12pt !important;
+  }
+
+  .viewer .print-part-id { 
+    display: block !important; 
+    text-align: center !important; 
+    font-size: 24pt !important; 
+    font-weight: bold !important; 
+    margin-bottom: 24px !important; 
+    color: #000000 !important; 
+  }
+
+  .viewer .note-body {
+    background: #ffffff !important;
+    border: none !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    white-space: pre-wrap !important;
+    padding: 0 !important;
+  }
+
+  /* 4. Format the Image Grid for print (4 per row) */
+  .viewer .images {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    margin-top: 16px !important;
+  }
+
+  .viewer .image-card {
+    flex: 1 1 23% !important;
+    max-width: 24% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #ffffff !important;
+    border: none !important;
+  }
+
+  .viewer .image-card .image-frame {
+    border: 1px solid #cccccc !important;
+    background: #ffffff !important;
+  }
+
+  .viewer .image-card .caption {
+    background: #ffffff !important;
+    border: none !important;
+    color: #000000 !important;
+    padding: 8px 0 !important;
+    text-align: center !important;
+  }
+}

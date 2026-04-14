@@ -1,22 +1,14 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-    // Outbound calls
-    printToPdf: (partId) => ipcRenderer.send('print-to-pdf', partId),
-    exportData: (data, filename) => ipcRenderer.send('export-data', data, filename),
-    importData: () => ipcRenderer.send('import-data'),
     
-    // Inbound listeners (Cleans up old listeners automatically on page reload)
-    onPdfExportStarted: (callback) => {
-        ipcRenderer.removeAllListeners('pdf-export-started');
-        ipcRenderer.on('pdf-export-started', () => callback());
-    },
-    onPdfExportComplete: (callback) => {
-        ipcRenderer.removeAllListeners('pdf-export-complete');
-        ipcRenderer.on('pdf-export-complete', () => callback());
-    },
-    onDataLoaded: (callback) => {
-        ipcRenderer.removeAllListeners('data-loaded');
-        ipcRenderer.on('data-loaded', (event, data) => callback(data));
-    }
+    importData: () => ipcRenderer.send('import-data'),
+    exportData: (notes, filename) => ipcRenderer.send('export-data', notes, filename),
+    printToPdf: (partId) => ipcRenderer.send('print-to-pdf', partId),
+    
+    // Updated to receive the filename string
+    onDataLoaded: (callback) => ipcRenderer.on('data-loaded', (event, data, filename) => callback(data, filename)),
+    onPdfExportStarted: (callback) => ipcRenderer.on('pdf-export-started', () => callback()),
+    onPdfExportComplete: (callback) => ipcRenderer.on('pdf-export-complete', () => callback())
+
 });

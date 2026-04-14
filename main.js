@@ -25,6 +25,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
+
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
@@ -34,62 +35,77 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// --- NOTE VAULT IPC HANDLERS ---
-ipcMain.on('print-to-pdf', async (event, partId) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
-    event.sender.send('pdf-export-started');
-    
-    try {
-        const safeName = partId.replace(/[^a-z0-9]/gi, '_');
-        const pdfPath = await dialog.showSaveDialog(win, {
-            title: 'Save Note as PDF',
-            defaultPath: `${safeName}.pdf`,
-            filters: [{ name: 'PDF', extensions: ['pdf'] }]
-        });
-
-        if (pdfPath.filePath) {
-            const pdfData = await win.webContents.printToPDF({
-                printBackground: true,
-                pageSize: 'Letter'
-            });
-            fs.writeFileSync(pdfPath.filePath, pdfData);
-        }
-    } catch (error) {
-        console.error('Failed to save PDF:', error);
-    } finally {
-        event.sender.send('pdf-export-complete');
-    }
-});
-
-ipcMain.on('export-data', async (event, data, filename) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
-    try {
-        const savePath = await dialog.showSaveDialog(win, {
-            title: 'Export Profile',
-            defaultPath: filename,
-            filters: [{ name: 'JSON', extensions: ['json'] }]
-        });
-        if (savePath.filePath) {
-            fs.writeFileSync(savePath.filePath, JSON.stringify(data, null, 2));
-        }
-    } catch (err) { 
-        console.error('Export failed:', err); 
-    }
-});
+// ==========================================
+// METRASYNC APP BACKEND PIPELINE
+// ==========================================
 
 ipcMain.on('import-data', async (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
     try {
-        const openPath = await dialog.showOpenDialog(win, {
-            title: 'Import Profile',
-            filters: [{ name: 'JSON', extensions: ['json'] }],
+        const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+            title: 'Import Note Vault Profile',
+            filters: [{ name: 'JSON Files', extensions: ['json'] }],
             properties: ['openFile']
         });
-        if (!openPath.canceled && openPath.filePaths.length > 0) {
-            const fileContent = fs.readFileSync(openPath.filePaths[0], 'utf-8');
-            event.sender.send('data-loaded', fileContent);
-        }
-    } catch (err) { 
-        console.error('Import failed:', err); 
+
+        if (canceled || filePaths.length === 0) return;
+
+        const fileContent = fs.readFileSync(filePaths[0], 'utf-8');
+        
+        // Extract the filename (e.g., "Jason" from "Jason_notevault.json")
+        const fileName = path.basename(filePaths[0], '.json').replace('_notevault', '');
+        
+        // Send both the data and the filename back
+        event.reply('data-loaded', fileContent, fileName);
+    } catch (error) {
+        console.error('Failed to read file:', error);
+        event.reply('data-loaded', '{}', 'error');
     }
+});
+
+ipcMain.on('export-data', async (event, notes, defaultFilename) => {
+    try {
+        const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+            title: 'Export Note Vault Profile',
+            defaultPath: defaultFilename,
+            filters: [{ name: 'JSON Files', extensions: ['json'] }]
+        });
+
+        if (canceled || !filePath) return;
+
+        fs.writeFileSync(filePath, JSON.stringify(notes, null, 2));
+    } catch (error) {
+        console.error('Failed to save file:', error);
+    }
+});
+
+ipcMain.on('print-to-pdf', async (event, partId) => {
+     try {
+         event.reply('pdf-export-started');
+         
+         const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+             title: 'Save Inspection PDF',
+             defaultPath: `${partId}_inspection.pdf`,
+             filters: [{ name: 'PDFs', extensions: ['pdf'] }]
+         });
+
+         if (canceled || !filePath) {
+             event.reply('pdf-export-complete');
+             return;
+         }
+
+         const pdfOptions = {
+             marginsType: 0,
+             printBackground: true,
+             printSelectionOnly: false,
+             landscape: false
+         };
+
+         const pdfBuffer = await mainWindow.webContents.printToPDF(pdfOptions);
+         fs.writeFileSync(filePath, pdfBuffer);
+         
+         event.reply('pdf-export-complete');
+     } catch (error) {
+         console.error('PDF generation failed:', error);
+         event.reply('pdf-export-complete');
+     }
 });
