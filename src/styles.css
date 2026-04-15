@@ -50,8 +50,9 @@ body {
 /* Horizontal Navigation Styling */
 .top-nav {
     background-color: var(--nav-bg);
-    border-top: 1px solid var(--hover-bg);
-    border-bottom: 1px solid var(--hover-bg);
+    border: 1px solid var(--hover-bg); /* Changed from top/bottom to a full border */
+    border-radius: 12px; /* Added rounded corners to match the tools */
+    margin: 0 20px; /* Applies 20px left/right spacing to perfectly match the content padding */
 }
 
 .nav-links {
@@ -96,7 +97,7 @@ body {
 #app-view {
     width: 100%;
     max-width: 100%; /* Removed 1200px cap so tools fill the width */
-    height: 100%; /* FIX: Added height 100% to pass the boundary down to the child tools */
+    height: 100%; /* Pass the boundary down to the child tools */
 }
 
 /* Base styles for loaded pages */
@@ -154,7 +155,7 @@ body {
 .top-header { background-color: var(--bg); }
 .top-header h1 { color: var(--text); }
 .top-header p { color: var(--muted); }
-.top-nav { background-color: var(--panel); border-color: var(--border); }
+.top-nav { background-color: var(--panel); border: 1px solid var(--border); }
 .nav-btn { color: var(--muted); }
 .nav-btn:hover { background-color: var(--panel-2); color: var(--text); }
 .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
