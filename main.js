@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const ExcelJS = require('exceljs');
 const { chromium } = require('playwright');
 
 let mainWindow;
@@ -121,52 +120,6 @@ function formatDate(val) {
     return val.toString();
 }
 
-ipcMain.on('import-legacy-excel', async (event) => {
-    try {
-        const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-            title: 'Select Legacy Excel Source',
-            filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
-            properties: ['openFile']
-        });
-
-        if (canceled || filePaths.length === 0) return;
-
-        const wb = new ExcelJS.Workbook();
-        await wb.xlsx.readFile(filePaths[0]);
-        const ws = wb.worksheets[0];
-
-        let docs = [];
-        // Map Col A to 'Left Column' and Col G to 'Right Column' to preserve layout
-        const scanCols = [
-            { id: 1, rev: 2, date: 3, prevRev: 4, prevDate: 5, group: 'Left Column' },
-            { id: 7, rev: 8, date: 9, prevRev: 10, prevDate: 11, group: 'Right Column' }
-        ];
-
-        for (let c of scanCols) {
-            for (let r = 3; r <= 100; r++) {
-                const idCell = ws.getRow(r).getCell(c.id);
-                if (idCell && idCell.value && idCell.hyperlink) {
-                    docs.push({
-                        id: 'doc_' + Math.random().toString(36).substr(2, 9),
-                        group: c.group,
-                        docId: idCell.value.text || idCell.value.toString(),
-                        url: idCell.hyperlink,
-                        rev: formatDate(ws.getRow(r).getCell(c.rev).value),
-                        date: formatDate(ws.getRow(r).getCell(c.date).value),
-                        prevRev: formatDate(ws.getRow(r).getCell(c.prevRev).value),
-                        prevDate: formatDate(ws.getRow(r).getCell(c.prevDate).value),
-                        status: 'ok' // Default status
-                    });
-                }
-            }
-        }
-        event.reply('legacy-excel-imported', docs);
-    } catch (error) {
-        console.error(error);
-        event.reply('audit-error', 'Failed to read Excel file. Make sure it is not open in another program.');
-    }
-});
-
 ipcMain.on('start-native-audit', async (event, links) => {
     auditIsRunning = true;
     auditStartPermission = false;
@@ -182,27 +135,35 @@ ipcMain.on('start-native-audit', async (event, links) => {
         const context = await auditBrowser.newContext({ noViewport: true });
         const page = await context.newPage();
 
-        try { await page.goto(links[0].url); } catch (e) {}
+        try { await page.goto(links[0].url, { waitUntil: 'domcontentloaded' }); } catch (e) {}
 
-        // Login Pause Loop
+        await new Promise(r => setTimeout(r, 2000));
+
+        // Smart Login Pause Loop
         while (auditIsRunning) {
-            event.reply('audit-status', 'WAITING: Log in to Laserfiche, then click START.');
-            while (!auditStartPermission) {
-                if (!auditIsRunning) break;
-                await new Promise(r => setTimeout(r, 500));
-            }
-            if (!auditIsRunning) break;
-
+            let needsLogin = false;
             try {
                 const title = (await page.title()).toLowerCase();
                 const currentUrl = page.url().toLowerCase();
                 if (title.includes("login") || title.includes("sign in") || currentUrl.includes("login")) {
-                    event.reply('audit-validation-failed', "Login Screen Detected!\n\nPlease log in to Laserfiche, then click 'START AUDIT' again.");
-                    auditStartPermission = false;
-                    continue;
+                    needsLogin = true;
                 }
             } catch (e) {}
-            break;
+
+            if (needsLogin) {
+                event.reply('audit-validation-failed', "Laserfiche Login Detected.\n\n1. Go to the newly opened browser window.\n2. Log in completely.\n3. Return to this dashboard and click 'RESUME AUDIT'.");
+                auditStartPermission = false;
+                
+                while (!auditStartPermission) {
+                    if (!auditIsRunning) break;
+                    await new Promise(r => setTimeout(r, 500));
+                }
+                
+                // Allow buffer time for Laserfiche to process login before loop re-checks
+                await new Promise(r => setTimeout(r, 2000));
+            } else {
+                break; 
+            }
         }
 
         if (!auditIsRunning) {
@@ -221,8 +182,7 @@ ipcMain.on('start-native-audit', async (event, links) => {
 
             let isDead = false;
             try {
-                await page.goto(item.url);
-                await page.waitForLoadState('domcontentloaded');
+                await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 25000 });
                 const title = (await page.title()).toLowerCase();
                 let bodyText = "";
                 try { bodyText = (await page.innerText("body")).toLowerCase(); } catch (e) {}
@@ -231,7 +191,7 @@ ipcMain.on('start-native-audit', async (event, links) => {
                     isDead = true;
                 }
             } catch (e) {
-                isDead = true;
+                isDead = true; 
             }
 
             if (isDead) {

@@ -4,17 +4,19 @@
 <div class="revauditor-wrapper">
     <header class="app-header">
         <div class="header-left">
-            <button id="currentProfileBtn" class="profile-btn" title="Click to manage profiles">Profile: Kinnex</button>
+            <div class="toggle-container" style="display: flex; border: 1px solid #555; border-radius: 5px; overflow: hidden;">
+                <button id="btnProfileKinnex" style="padding: 8px 16px; border: none; background: #1976d2; color: white; cursor: pointer; font-weight: bold;">Kinnex</button>
+                <button id="btnProfileQuattro" style="padding: 8px 16px; border: none; background: transparent; color: #ccc; cursor: pointer; font-weight: bold;">Quattro</button>
+            </div>
         </div>
         <h1>Revision Auditor</h1>
         <div class="header-right">
-            <button id="importLegacyBtn"><i class="fa-solid fa-file-excel"></i> Import Legacy</button>
             <button id="printBtn"><i class="fa-solid fa-file-pdf"></i> Save Report</button>
         </div>
     </header>
 
-    <main class="app-main view-expanded">
-        <section class="panel panel-center" style="display:flex; flex-direction: column;">
+    <main class="app-main view-expanded" style="width: 100%; max-width: 100%;">
+        <section class="panel" style="display:flex; flex-direction: column; width: 100%; max-width: 100%; box-sizing: border-box;">
             <div class="viewer-header">
                 <div class="viewer-toolbar" style="width:100%; display:flex; justify-content:space-between; align-items:center;">
                     <div style="flex: 1; display:flex; align-items:center; gap:10px;">
@@ -22,7 +24,7 @@
                         <button id="abortAuditBtn" class="danger" disabled><i class="fa-solid fa-stop"></i> Abort</button>
                         <span id="auditStatusLabel" class="muted">Ready to scan.</span>
                     </div>
-                    <div style="flex: 1; padding: 0 20px;">
+                    <div style="flex: 2; padding: 0 20px;">
                         <div class="progress-container"><div id="auditProgressBar" class="progress-bar"></div></div>
                     </div>
                     <div style="flex: 1; display:flex; justify-content:flex-end;">
@@ -31,19 +33,19 @@
                 </div>
             </div>
 
-            <div class="tables-container" id="printableArea">
-                <div class="table-group">
+            <div class="tables-container" id="printableArea" style="display: flex; gap: 20px; width: 100%;">
+                <div class="table-group" style="flex: 1;">
                     <h3>Left Column</h3>
-                    <table class="audit-table" id="leftTable">
+                    <table class="audit-table" id="leftTable" style="width: 100%;">
                         <thead>
                             <tr><th>Doc ID</th><th>Rev</th><th>Date</th><th>Prev Rev</th><th>Prev Date</th><th class="no-print">Actions</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="table-group">
+                <div class="table-group" style="flex: 1;">
                     <h3>Right Column</h3>
-                    <table class="audit-table" id="rightTable">
+                    <table class="audit-table" id="rightTable" style="width: 100%;">
                         <thead>
                             <tr><th>Doc ID</th><th>Rev</th><th>Date</th><th>Prev Rev</th><th>Prev Date</th><th class="no-print">Actions</th></tr>
                         </thead>
@@ -87,28 +89,6 @@
         </div>
     </div>
 
-    <div id="profileModal" class="modal" aria-hidden="true" role="dialog" aria-label="Manage Profiles">
-        <div class="modal-dialog" style="width: min(90vw, 500px)">
-          <div class="modal-header">
-            <div>Manage Auditor Profiles</div>
-            <button id="profileCloseBtn" aria-label="Close">✕</button>
-          </div>
-          <div class="modal-body">
-            <div class="field">
-              <span>AVAILABLE PROFILES</span>
-              <div id="profileList" class="profile-list"></div>
-            </div>
-            <div class="field" style="margin-top: 12px;">
-              <span>CREATE NEW PROFILE</span>
-              <div class="field-row">
-                <input id="newProfileInput" type="text" class="form-input" placeholder="Enter new profile name..." />
-                <button id="createProfileBtn" class="primary">Create</button>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div>
-
     <div id="auditAlertModal" class="modal" aria-hidden="true" style="z-index: 200;">
         <div class="modal-dialog" style="width: 400px; max-width: 90vw;">
             <div class="modal-header">
@@ -131,3 +111,5 @@
         </div>
     </div>
 </div>
+
+<script src="pages/revauditor.js"></script>

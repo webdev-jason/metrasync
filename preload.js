@@ -10,8 +10,6 @@ contextBridge.exposeInMainWorld('api', {
     onDataLoaded: (callback) => ipcRenderer.on('data-loaded', (event, data, filename) => callback(data, filename)),
     
     // Revision Auditor IPC
-    importLegacyExcel: () => ipcRenderer.send('import-legacy-excel'),
-    onLegacyExcelImported: (callback) => ipcRenderer.on('legacy-excel-imported', (event, docs) => callback(docs)),
     startNativeAudit: (links) => ipcRenderer.send('start-native-audit', links),
     resumeAudit: () => ipcRenderer.send('resume-audit'),
     abortAudit: () => ipcRenderer.send('abort-audit'),
